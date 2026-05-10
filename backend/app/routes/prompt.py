@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.prompt import PromptRequest,PromptResponse
+from app.schemas.prompt import PromptRequest,PromptResponse
 from app.services.prompt import process_prompt
 
 router=APIRouter()
