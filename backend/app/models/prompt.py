@@ -1,4 +1,5 @@
 from sqlalchemy import Column,Integer,ForeignKey,DateTime,Text
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.database import Base
 
@@ -15,3 +16,5 @@ class Prompt(Base):
     response=Column(Text,nullable=True)
 
     created_at=Column(DateTime,default=datetime.utcnow)
+
+    user=relationship("User",back_populates="prompts")
