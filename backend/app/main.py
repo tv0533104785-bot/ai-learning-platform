@@ -1,4 +1,12 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+import os
+
+print("API KEY LOADED:", os.getenv("OPENAI_API_KEY") is not None)
 
 from app.routes.prompt import router as prompt_router
 from app.database.database import Base,engine
