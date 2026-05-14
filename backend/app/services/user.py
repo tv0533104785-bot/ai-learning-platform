@@ -1,17 +1,19 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
 from app.models.user import User
+from app.core.errors import UserNotFound
 
-def get_users(db:Session):
+
+def get_users(db: Session) -> list[User]:
 
     return db.query(User).all()
 
-def get_user(db:Session,user_id:int):
 
-    user=db.query(User).filter(User.id==user_id).first()
+def get_user(db: Session, user_id: int) -> User:
+
+    user = db.get(User, user_id)
 
     if not user:
-        raise HTTPException(status_code=404,detail="User not found.")
+        raise UserNotFound()
 
     return user

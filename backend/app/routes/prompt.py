@@ -6,7 +6,7 @@ from app.core.dependencies import get_current_user
 from app.models. user import User
 from app.models.prompt import Prompt
 from app.schemas.prompt import PromptCreate,PromptResponse
-from app.services.prompt import create_prompt,get_prompts_by_user_id
+from app.services.prompt import create_prompt,get_prompts_by_user
 
 router=APIRouter(prefix="/prompts",tags=["Prompts"])
 
@@ -15,6 +15,6 @@ def create_prompt_endpoint(data:PromptCreate,db:Session=Depends(get_db),user:Use
     return create_prompt(db,user,data)
 
 @router.get("/me",response_model=list[PromptResponse])
-def get_prompt_by_user_id_endpoint(db:Session=Depends(get_db),user:User=Depends(get_current_user)):
+def get_prompt_by_user_endpoint(db:Session=Depends(get_db),user:User=Depends(get_current_user)):
 
-    return get_prompts_by_user_id(db,user)
+    return get_prompts_by_user(db,user)

@@ -1,14 +1,19 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
 from app.models.category import Category
 from app.models.sub_category import SubCategory
+from app.core.errors import CategoryNotFound
 
-def get_sub_categories(db:Session,category_id:int):
 
-    category=db.query(Category).filter(Category.id==category_id).first()
+def get_sub_categories(db: Session,category_id: int) -> list[SubCategory]:
+
+    category = db.get(Category, category_id)
 
     if not category:
-        raise HTTPException(status_code=404,detail="Category not found.")
-    
-    return db.query(SubCategory).filter(SubCategory.category_id==category_id).all()
+        raise CategoryNotFound()
+
+    return (
+        db.query(SubCategory)
+        .filter(SubCategory.category_id == category_id)
+        .all()
+    )

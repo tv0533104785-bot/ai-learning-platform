@@ -1,15 +1,16 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
+from app.schemas.auth import RegisterRequest,LoginRequest,TokenResponse
 from app.models.user import User
 from app.core.security import create_access_token
+from app.core.errors import UserAlreadyExists,UserNotFound
 
-def register_user(db: Session, data):
+def register_user(db: Session, data:RegisterRequest)->TokenResponse:
 
     user = db.query(User).filter(User.phone == data.phone).first()
 
     if user:
-        raise HTTPException (status_code=409,detail="User already exists")
+        raise UserAlreadyExists()
 
     new_user = User(
         name=data.name,
@@ -17,28 +18,38 @@ def register_user(db: Session, data):
     )
 
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
 
-    token = create_access_token({"user_id": new_user.id})
+    try:
+        db.commit()
+        db.refresh(new_user)
 
-    return{
-        "access_token":token,
-        "token_type":"bearer"
-    }
+    except Exception:
+        db.rollback()
+        raise
+
+    token = generate_user_token(new_user.id)
+
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer"
+    )
 
 
-def login_user(db: Session, data):
+def login_user(db: Session, data:LoginRequest)->TokenResponse:
 
     user = db.query(User).filter(User.phone == data.phone).first()
 
     if not user:
-        raise HTTPException(status_code=404,detail="User not found")
+        raise UserNotFound()
 
-    token = create_access_token({"user_id": user.id})
+    token = generate_user_token(user.id)
 
-    return{
-        "access_token":token,
-        "token_type":"bearer"
-    }
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer"
+    )
 
+def generate_user_token(user_id:int):
+    return create_access_token({
+        "user_id":user_id
+    })
