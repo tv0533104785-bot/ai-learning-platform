@@ -1,23 +1,20 @@
 from fastapi import APIRouter,Depends,HTTPException
 from sqlalchemy.orm import Session
 
-from app.schemas.prompt import PromptCreate,PromptResponse
 from app.database.deps import get_db
-from app.services.prompt import create_prompt
+from app.core.dependencies import get_current_user
+from app.models. user import User
 from app.models.prompt import Prompt
+from app.schemas.prompt import PromptCreate,PromptResponse
+from app.services.prompt import create_prompt,get_prompts_by_user_id
 
-router=APIRouter()
+router=APIRouter(prefix="/prompts",tags=["Prompts"])
 
-@router.post("/prompts",response_model=PromptResponse)
-def create_prompt_endpoint(data:PromptCreate,db:Session=Depends(get_db)):
-    return create_prompt(db,data)
+@router.post("/",response_model=PromptResponse)
+def create_prompt_endpoint(data:PromptCreate,db:Session=Depends(get_db),user:User=Depends(get_current_user)):
+    return create_prompt(db,user,data)
 
-@router.get("/prompts",response_model=PromptResponse)
-def get_prompt_by_id(id:int,db:Session=Depends(get_db)):
+@router.get("/me",response_model=list[PromptResponse])
+def get_prompt_by_user_id_endpoint(db:Session=Depends(get_db),user:User=Depends(get_current_user)):
 
-    prompt=db.query(Prompt).filter(Prompt.id==id).first()
-
-    if not prompt:
-        raise HTTPException(status_code=404,detail="Prompt not found")
-    
-    return prompt
+    return get_prompts_by_user_id(db,user)

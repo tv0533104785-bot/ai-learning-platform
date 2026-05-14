@@ -1,23 +1,17 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 
 from app.models.user import User
-from app.schemas.user import UserCreate
-from app.core.errors import UserAlreadyExists
 
-def create_user(db:Session,data:UserCreate):
-    user=User(
-        name=data.name,
-        phone=data.phone
-    )
+def get_users(db:Session):
 
-    try:
-        user=User(phone=data.phone)    
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return user
-    
-    except IntegrityError:
-        db.rollback()
-        raise UserAlreadyExists()     
+    return db.query(User).all()
+
+def get_user(db:Session,user_id:int):
+
+    user=db.query(User).filter(User.id==user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404,detail="User not found.")
+
+    return user

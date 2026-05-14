@@ -1,7 +1,6 @@
 from pydantic import BaseModel,Field,field_validator
 
 class PromptCreate(BaseModel):
-    user_id:int=Field(gt=0)
     category_id:int=Field(gt=0)
     sub_category_id:int=Field(gt=0)
 
