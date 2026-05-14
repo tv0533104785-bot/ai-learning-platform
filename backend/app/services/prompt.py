@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
-from app.models.prompt import Prompt
-from app.schemas.prompt import PromptRequest
 
-def create_prompt(db: Session,data:PromptRequest):
+from app.models.prompt import Prompt
+from app.schemas.prompt import PromptCreate
+
+def create_prompt(db: Session,data:PromptCreate):
     prompt=Prompt(
         user_id=data.user_id,
         category_id=data.category_id,
