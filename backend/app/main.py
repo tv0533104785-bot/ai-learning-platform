@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI,Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 if os.getenv("ENV") != "docker":
@@ -9,10 +10,6 @@ if os.getenv("ENV") != "docker":
 from app.database.database import SessionLocal,Base,engine
 from app.seeds.categories import seed_categories
 from app.models import *
-#from app.models.user import User
-#from app.models.category import Category
-#from app.models.sub_category import SubCategory
-#from app.models.prompt import Prompt
 
 from app.routes.auth import router as auth_router
 from app.routes.category import router as category_router
@@ -22,6 +19,17 @@ from app.routes.user import router as user_router
 from app.core.errors import AppException
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5174",
+        "http://127.0.0.1:5174"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.exception_handler(AppException)
 def app_exception_handler(_:Request,exc:AppException):

@@ -56,7 +56,7 @@ def seed_categories(db: Session):
         else:
             category = Category(name=category_data["name"])
             db.add(category)
-            db.flush()  # לקבל ID
+            db.flush()
 
         for sub_name in category_data["subs"]:
 
