@@ -1,11 +1,19 @@
+import os
 from fastapi import FastAPI,Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
-load_dotenv()
+if os.getenv("ENV") != "docker":
+    load_dotenv()
 
-from app.database.database import Base,engine
+from app.database.database import SessionLocal,Base,engine
+from app.seeds.categories import seed_categories
 from app.models import *
+#from app.models.user import User
+#from app.models.category import Category
+#from app.models.sub_category import SubCategory
+#from app.models.prompt import Prompt
+
 from app.routes.auth import router as auth_router
 from app.routes.category import router as category_router
 from app.routes.sub_category import router as sub_category_router
@@ -28,7 +36,18 @@ def app_exception_handler(_:Request,exc:AppException):
         }
     )
 
-Base.metadata.create_all(bind=engine)
+@app.on_event("startup")
+def startup():
+    Base.metadata.create_all(bind=engine)
+
+
+    db=SessionLocal()
+
+    try:
+        seed_categories(db)
+    
+    finally:
+        db.close()
 
 app.include_router(auth_router)
 app.include_router(category_router)
