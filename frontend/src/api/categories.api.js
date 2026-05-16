@@ -1,5 +1,16 @@
-import { apiGet } from "./client";
+import { apiRequest } from "./client";
 
-export function getCategories(){
-    return apiGet("/categories/");
-}
+export const getCategories=()=>
+    apiRequest({
+        path:"/categories/"
+    });
+
+export const getCategoryById=(categoryId)=>
+    apiRequest({
+        path:`/categories/${categoryId}`
+    });
+
+export const getSubCategories=(categoryId)=>
+    apiRequest({
+        path:`/sub-categories/by-category/${categoryId}`
+    });
