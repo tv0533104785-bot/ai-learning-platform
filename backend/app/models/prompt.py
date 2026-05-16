@@ -17,6 +17,8 @@ class Prompt(Base):
     prompt=Column(Text,nullable=False)
     response=Column(Text,nullable=True)
 
-    created_at=Column(DateTime,default=datetime.utcnow)
+    created_at=Column(DateTime,default=datetime.utcnow,index=True)
 
     user=relationship("User",back_populates="prompts")
+    category = relationship("Category")
+    sub_category = relationship("SubCategory")

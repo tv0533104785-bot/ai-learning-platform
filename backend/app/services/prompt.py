@@ -2,10 +2,22 @@ from sqlalchemy.orm import Session
 
 from app.models.prompt import Prompt
 from app.models.user import User
-from app.schemas.prompt import PromptCreate
+from app.schemas.prompt import PromptCreate,PromptResponse
 from app.services.ai import generate_lesson
 
-def create_prompt(db: Session,user:User,data:PromptCreate)->Prompt:
+
+def to_prompt_response(p: Prompt) -> PromptResponse:
+    return PromptResponse(
+        id=p.id,
+        prompt=p.prompt,
+        response=p.response,
+        category_name=p.category.name,
+        sub_category_name=p.sub_category.name,
+        created_at=p.created_at
+    )
+
+
+def create_prompt(db: Session,user:User,data:PromptCreate)->PromptResponse:
 
     ai_response=generate_lesson(data.prompt)
 
@@ -27,13 +39,19 @@ def create_prompt(db: Session,user:User,data:PromptCreate)->Prompt:
         db.rollback()
         raise
 
-    return prompt
+    category_name = prompt.category.name if prompt.category else ""
+    sub_category_name = prompt.sub_category.name if prompt.sub_category else ""
 
-def get_prompts_by_user(db: Session, user: User)->list[Prompt]:
+    return to_prompt_response(prompt)
 
-    return (
+def get_prompts_by_user(db: Session, user: User):
+    prompts = (
         db.query(Prompt)
         .filter(Prompt.user_id == user.id)
         .order_by(Prompt.created_at.desc())
         .all()
     )
+
+    return [
+        to_prompt_response(p)for p in prompts
+    ]

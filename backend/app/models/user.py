@@ -8,6 +8,6 @@ class User(Base):
 
     id=Column(Integer,primary_key=True,index=True)
     name=Column(String,nullable=False,index=True)
-    phone=Column(String,nullable=True,unique=True,index=True)
+    phone=Column(String,nullable=False,unique=True,index=True)
 
     prompts=relationship("Prompt",back_populates="user")

@@ -1,4 +1,5 @@
 from pydantic import BaseModel,Field,field_validator
+from datetime import datetime
 
 class PromptCreate(BaseModel):
     category_id:int=Field(gt=0)
@@ -21,9 +22,12 @@ class PromptCreate(BaseModel):
         return cleaned
 
 class PromptResponse(BaseModel):
-    id:int
-    prompt:str
-    response:str|None
-
+    id: int
+    prompt: str
+    response: str
+    category_name: str
+    sub_category_name: str
+    created_at: datetime
+    
     class Config:
         from_attributes=True
