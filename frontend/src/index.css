@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+.app-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+.user-card {
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.prompt-item {
+  padding: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.error {
+  color: #b91c1c;
+}

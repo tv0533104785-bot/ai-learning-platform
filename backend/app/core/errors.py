@@ -27,6 +27,12 @@ class InvalidToken(AppException):
     error_type = "INVALID_TOKEN"
     detail = "Invalid token"
 
+class AdminUnauthorized(AppException):
+
+    status_code = 403
+    error_type = "ADMIN_UNAUTHORIZED"
+    detail = "Admin access required"
+
 class CategoryNotFound(AppException):
 
     status_code = 404

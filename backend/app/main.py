@@ -15,6 +15,7 @@ from app.routes.category import router as category_router
 from app.routes.sub_category import router as sub_category_router
 from app.routes.prompt import router as prompt_router
 from app.routes.user import router as user_router
+from app.routes.admin import router as admin_router
 from app.core.errors import AppException
 
 app = FastAPI()
@@ -50,3 +51,4 @@ app.include_router(category_router)
 app.include_router(sub_category_router)
 app.include_router(prompt_router)
 app.include_router(user_router)
+app.include_router(admin_router)
