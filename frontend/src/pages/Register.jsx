@@ -1,16 +1,28 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { login } from '../api/auth.api.js'
+import { register } from '../api/auth.api.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import { validatePhone } from '../utils/validation.js'
+import { validateName, validatePhone } from '../utils/validation.js'
 
-export default function Login() {
+export default function Register() {
+  const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [nameError, setNameError] = useState(null)
   const [phoneError, setPhoneError] = useState(null)
   const [serverError, setServerError] = useState(null)
   const [loading, setLoading] = useState(false)
   const { loginUser } = useAuth()
   const navigate = useNavigate()
+
+  const handleNameChange = (e) => {
+    const value = e.target.value
+    setName(value)
+    if (value) {
+      setNameError(validateName(value))
+    } else {
+      setNameError(null)
+    }
+  }
 
   const handlePhoneChange = (e) => {
     const value = e.target.value
@@ -27,29 +39,44 @@ export default function Login() {
     setServerError(null)
     setLoading(true)
 
+    const nameValidation = validateName(name)
     const phoneValidation = validatePhone(phone)
-    if (phoneValidation) {
+    if (nameValidation || phoneValidation) {
+      setNameError(nameValidation)
       setPhoneError(phoneValidation)
       setLoading(false)
       return
     }
 
     try {
-      const data = await login({ phone })
+      const data = await register({ name, phone })
       loginUser(data.access_token)
       navigate('/dashboard')
     } catch (err) {
-      const message = err.message || 'Login failed'
+      const message = err.message || 'Registration failed'
       setServerError(message)
     } finally {
       setLoading(false)
     }
   }
 
+  const isValid = name && phone && !nameError && !phoneError
+
   return (
     <div className="page-card">
-      <h1>Login</h1>
+      <h1>Register</h1>
       <form onSubmit={handleSubmit} className="form-card">
+        <label>
+          Name
+          <input
+            value={name}
+            onChange={handleNameChange}
+            placeholder="Full name"
+            type="text"
+            required
+          />
+          {nameError && <span className="field-error">{nameError}</span>}
+        </label>
         <label>
           Phone
           <input
@@ -61,9 +88,8 @@ export default function Login() {
           />
           {phoneError && <span className="field-error">{phoneError}</span>}
         </label>
-
-        <button type="submit" disabled={loading || !!phoneError || !phone}>
-          {loading ? 'Logging in...' : 'Login'}
+        <button type="submit" disabled={loading || !isValid}>
+          {loading ? 'Registering...' : 'Register'}
         </button>
       </form>
       {serverError && <div className="error-box">{serverError}</div>}

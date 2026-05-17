@@ -1,0 +1,14 @@
+export function formatDate(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('he-IL', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+export function formatCategory(categoryName, subCategoryName) {
+  return `${categoryName} / ${subCategoryName}`
+}

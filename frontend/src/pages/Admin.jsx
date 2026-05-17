@@ -31,22 +31,15 @@ export default function Admin() {
   }, [token, navigate])
 
   if (loading) {
-    return <p>Loading admin dashboard...</p>
-  }
-
-  if (error) {
-    return <div>
-      <h1>Admin Dashboard</h1>
-      <p className="error">{error}</p>
-    </div>
+    return <p className="page-card">Loading admin dashboard...</p>
   }
 
   return (
-    <div>
+    <div className="page-card">
       <h1>Admin Dashboard</h1>
-      <p>Showing all users and their prompt history.</p>
-
-      {users.length === 0 ? (
+      {error ? (
+        <p className="error">{error}</p>
+      ) : users.length === 0 ? (
         <p>No users found.</p>
       ) : (
         users.map((user) => (

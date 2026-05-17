@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:8000'
+const API_BASE = 'http://localhost:8000'
 
 export async function apiRequest({ path, method = 'GET', body, token }) {
   const headers = {
@@ -25,7 +25,8 @@ export async function apiRequest({ path, method = 'GET', body, token }) {
   }
 
   if (!res.ok) {
-    throw data?.error || { message: `API error ${res.status}`, status: res.status }
+    const message = data?.error?.message || data?.message || `API error ${res.status}`
+    throw new Error(message)
   }
 
   return data
