@@ -9,10 +9,6 @@ if os.getenv("ENV") != "docker":
 from app.database.database import SessionLocal,Base,engine
 from app.seeds.categories import seed_categories
 from app.models import *
-#from app.models.user import User
-#from app.models.category import Category
-#from app.models.sub_category import SubCategory
-#from app.models.prompt import Prompt
 
 from app.routes.auth import router as auth_router
 from app.routes.category import router as category_router
