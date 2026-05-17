@@ -112,7 +112,7 @@ ADMIN_PHONE=your_admin_phone_number
 ### 1. Clone repository
 
 ```bash
-git clone (https://github.com/tv0533104785-bot/ai-learning-platform)
+git clone https://github.com/TziliVilensky/ai-learning-platform
 cd ai-learning-platform
 ```
 
