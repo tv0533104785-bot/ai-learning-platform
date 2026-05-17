@@ -1,131 +1,98 @@
-# ai-learning-platform
+# AI-Powered Learning Platform
 
-AI-powered learning platform backend that generates personalized lessons with OpenAI, tracks prompt history, and exposes admin-style user and prompt APIs.
+An AI-powered learning platform that generates personalized lessons using OpenAI, tracks prompt history, features an admin dashboard, and exposes custom APIs.
 
 ## Tech Stack
 
 ### Backend
 - FastAPI
-- SQLAlchemy
-- PostgreSQL
+- SQLAlchemy & PostgreSQL
 - Pydantic
-- JWT authentication
+- JWT Authentication
 - OpenAI API via `openai` client
+
+### Frontend
+- React + Vite
 
 ### Dev / Deployment
 - Docker Compose
-- PostgreSQL container
 - Python 3.11
-- `python-dotenv`
-
-### Frontend
-- Intended stack: React + Vite
-- Note: frontend source metadata is not included in this repository checkout; only backend service files are available.
 
 ---
 
 ## Repository Structure
 
-### Backend
-`backend/`
-- `Dockerfile` - builds the FastAPI backend image
-- `requirements.txt` - Python dependencies
-- `.env.example` - environment variable template
-- `app/main.py` - FastAPI application entrypoint
-- `app/core/` - security, error handling, and auth dependencies
-- `app/database/` - SQLAlchemy engine and DB session management
-- `app/models/` - ORM models for users, categories, subcategories, and prompts
-- `app/schemas/` - Pydantic request/response schemas
-- `app/routes/` - API route definitions
-- `app/services/` - business logic for auth, categories, prompts, and AI calls
-- `app/seeds/` - default category and subcategory seed data
+### Backend (`backend/`)
+- `Dockerfile` - Builds the FastAPI backend image.
+- `requirements.txt` - Python dependencies.
+- `.env.example` - Environment variable template.
+- `app/main.py` - FastAPI application entrypoint.
+- `app/core/` - Security, error handling, and auth dependencies.
+- `app/database/` - SQLAlchemy engine and DB session management.
+- `app/models/` - ORM models (Users, Categories, Subcategories, Prompts).
+- `app/schemas/` - Pydantic request/response schemas.
+- `app/routes/` - API route definitions (including admin routes).
+- `app/services/` - Business logic for auth, categories, prompts, and AI calls.
+- `app/seeds/` - Default category and subcategory seed data.
+
+### Frontend (`frontend/`)
+- Contains the React + Vite application source code and layout.
 
 ### Docker Compose
-`docker-compose.yml` runs:
-- `api` - FastAPI backend container
-- `db` - PostgreSQL 16 database container
+- `docker-compose.yml` - Orchestrates the `api` (FastAPI) and `db` (PostgreSQL 16) containers.
 
 ---
 
-## Key Features
+## Key Features & Admin Dashboard
 
-- JWT-based user authentication by phone number
-- User registration and login
-- Category and subcategory browsing
-- AI-powered lesson generation from user prompts
-- Prompt history retrieval for authenticated users
-- Admin-style user listing endpoint
-- Automatic category/seeding on startup
+- **Authentication:** JWT-based user authentication using phone numbers.
+- **AI Lesson Generation:** Personalized lessons generated via OpenAI's `gpt-4o` chat completion.
+- **History Tracking:** Saves prompt history for authenticated users.
+- **Admin Dashboard:** Accessible via `GET /admin/users` (returns all users with their prompt history). 
+  - *Note:* Protected by JWT and only accessible to the phone number configured in the `ADMIN_PHONE` environment variable.
 
 ---
 
 ## Data Model
 
 ### `users`
-- `id` (PK)
-- `name`
-- `phone` (unique)
+- `id` (PK) | `name` | `phone` (unique)
 
-### `categories`
-- `id` (PK)
-- `name`
-
-### `sub_categories`
-- `id` (PK)
-- `name`
-- `category_id` (FK)
+### `categories` & `sub_categories`
+- `id` (PK) | `name` | `category_id` (FK for sub_categories)
 
 ### `prompts`
-- `id` (PK)
-- `user_id` (FK)
-- `category_id` (FK)
-- `sub_category_id` (FK)
-- `prompt`
-- `response`
-- `created_at`
+- `id` (PK) | `user_id` (FK) | `category_id` (FK) | `sub_category_id` (FK) | `prompt` | `response` | `created_at`
 
 ---
 
 ## API Reference
 
 ### Auth
-- `POST /auth/register`
-  - Request: `name`, `phone`
-  - Response: `access_token`, `token_type`
-- `POST /auth/login`
-  - Request: `phone`
-  - Response: `access_token`, `token_type`
+- `POST /auth/register` - Request: `name`, `phone` -> Response: `access_token`, `token_type`
+- `POST /auth/login` - Request: `phone` -> Response: `access_token`, `token_type`
 
 ### Users
-- `GET /users`
-  - Returns list of all users
-- `GET /users/{user_id}`
-  - Returns a single user by ID
+- `GET /users` - Returns a list of all users
+- `GET /users/{user_id}` - Returns a single user by ID
 
-### Categories
-- `GET /categories`
-  - Returns all categories
-- `GET /categories/{category_id}`
-  - Returns a single category by ID
+### Admin
+- `GET /admin/users` - Returns all users along with their complete prompt history (Admin only)
 
-### Sub Categories
-- `GET /sub_categories/by-category/{category_id}`
-  - Returns subcategories for a given category
+### Categories & Subcategories
+- `GET /categories` - Returns all categories
+- `GET /categories/{category_id}` - Returns a single category by ID
+- `GET /sub_categories/by-category/{category_id}` - Returns subcategories for a given category
 
 ### Prompts
-- `POST /prompts`
-  - Auth required
-  - Request body: `category_id`, `sub_category_id`, `prompt`
-  - Creates a prompt and stores the AI response
-- `GET /prompts/me`
-  - Auth required
-  - Returns authenticated user prompt history
+- `POST /prompts` - (Auth Required) Request body: `category_id`, `sub_category_id`, `prompt`. Generates and stores AI response.
+- `GET /prompts/me` - (Auth Required) Returns the authenticated user's prompt history.
 
 ---
 
 ## Environment Variables
 
-Create `backend/.env` from `backend/.env.example` with:
+Create a `.env` file inside the `backend/` directory based on `backend/.env.example`:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key
@@ -133,6 +100,7 @@ SECRET_KEY=your_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_DAYS=1
 DATABASE_URL=postgresql://postgres:password@db:5432/app_db
+ADMIN_PHONE=your_admin_phone_number
 ```
 
 > `DATABASE_URL` is used by SQLAlchemy to connect to PostgreSQL.
@@ -144,7 +112,7 @@ DATABASE_URL=postgresql://postgres:password@db:5432/app_db
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/tv0533104785-bot/ai-learning-platform
+git clone (https://github.com/tv0533104785-bot/ai-learning-platform)
 cd ai-learning-platform
 ```
 
@@ -169,15 +137,32 @@ Edit `backend/.env` and add your OpenAI API key and database connection string.
 docker-compose up --build
 ```
 
-### 4. Access the backend
+### 4. Run the Frontend App
 
-- API: `http://localhost:8000`
-- OpenAPI docs: `http://localhost:8000/docs`
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+
+### 5. How to Access & Test
+
+- **Frontend App (UI):** Open the URL printed in your terminal after running `npm run dev` (usually `http://localhost:5173`). You can **Ctrl + Click** the link directly from the terminal to open it.
+- **Backend API:** `http://localhost:8000`
+- **Interactive Swagger Documentation:** `http://localhost:8000/docs`
 
 ---
 
-## Notes
+## Testing Admin Features via Swagger Docs
+1. Open http://localhost:8000/docs in your browser.
 
-- The backend automatically creates database tables and seeds category/subcategory data on startup.
-- The AI lesson generation uses OpenAI chat completion model `gpt-4o`.
-- If `frontend` source files are needed, they are not available in this repository checkout; only the backend service is fully present.
+2. Use the /auth/login endpoint to log in using the exact phone number specified in your ADMIN_PHONE environment variable.
+
+3. Copy the string value of the returned access_token.
+
+4. Click the Authorize button located at the top right of the Swagger UI page.
+
+5. Type Bearer <your_copied_token> and click Authorize.
+
+6. Scroll down to test the GET /admin/users endpoint successfully.
